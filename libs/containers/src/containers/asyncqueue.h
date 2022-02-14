@@ -21,10 +21,12 @@ namespace containers {
      */
     template <typename T>
     class AsyncQueue {
+        // PRIVATE DATA
         std::queue<T> d_queue;
         std::mutex d_mutex;
         std::condition_variable d_conditionVariable;
     public:
+        // PUBLIC MANIPULATORS
 
         /**
          * @brief Push the specified `value` to the queue.
@@ -46,6 +48,25 @@ namespace containers {
             d_queue.emplace(std::forward<Args...>(args...));
             d_conditionVariable.notify_all();
         }
+
+        /**
+         * @brief Swaps this queue with the specified `other` queue.
+         * 
+         * Note that this makes sure that if it means that a queue it non-empty after this
+         * operation any blocking `pop` operation is unblocked.
+         */
+        void swap(AsyncQueue &other) noexcept {
+            if (this == &other) {
+                return;
+            }
+
+            std::scoped_lock lock(d_mutex, other.d_mutex);
+            d_queue.swap(other.d_queue);
+            other.d_conditionVariable.notify_all();
+            d_conditionVariable.notify_all();
+        }
+
+        // PUBLIC ACCESSORS
 
         /**
          * @brief Block until the queue is not empty and pop the front object from the queue and
@@ -76,23 +97,6 @@ namespace containers {
             auto result = d_queue.front();
             d_queue.pop();
             return std::optional<T>(result);
-        }
-
-        /**
-         * @brief Swaps this queue with the specified `other` queue.
-         * 
-         * Note that this makes sure that if it means that a queue it non-empty after this
-         * operation any blocking `pop` operation is unblocked.
-         */
-        void swap(AsyncQueue &other) noexcept {
-            if (this == &other) {
-                return;
-            }
-
-            std::scoped_lock lock(d_mutex, other.d_mutex);
-            d_queue.swap(other.d_queue);
-            other.d_conditionVariable.notify_all();
-            d_conditionVariable.notify_all();
         }
 
         /**

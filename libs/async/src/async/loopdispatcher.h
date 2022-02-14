@@ -13,16 +13,19 @@ namespace async {
  */
 class LoopDispatcher : public Dispatcher {
 
-containers::SingleConsumerQueue<DispatchFunction> d_queue;
+    // PRIVATE DATA
+    containers::SingleConsumerQueue<DispatchFunction> d_queue;
 
 public:
 
-/**
- * @brief Blocks until the next function is available for dispatch and returns it.
- */
-DispatchFunction getNextDispatch();
+    // PUBLIC MANIPULATORS
+    
+    /**
+     * @brief Blocks until the next function is available for dispatch and returns it.
+     */
+    DispatchFunction getNextDispatch();
 
-void dispatch(DispatchFunction function) override;
+    void dispatch(DispatchFunction function) override;
 };
 
 }

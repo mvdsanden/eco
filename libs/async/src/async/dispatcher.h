@@ -15,7 +15,11 @@ namespace async {
  */
 class Dispatcher {
     public:
+    // PUBLIC TYPES
+    
     using DispatchFunction = std::function<void()>;
+
+    // PUBLIC MANIPULATORS
 
     /**
      * @brief Dispatches the specified `function`.

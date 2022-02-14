@@ -3,6 +3,8 @@
 namespace eco {
 namespace async {
 
+// PUBLIC MANIPULATORS
+
 Dispatcher::DispatchFunction LoopDispatcher::getNextDispatch() {
     return d_queue.pop();
 }
